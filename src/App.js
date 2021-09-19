@@ -1,24 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Suspense } from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+
+import Layout from "./components/layouts";
+import routes from "./routes";
+
+function withLayout(WrappedComponent) {
+  // ...and returns another component...
+  return class extends React.Component {
+    render() {
+      return (
+        <Layout>
+          <WrappedComponent></WrappedComponent>
+        </Layout>
+      );
+    }
+  };
+}
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Suspense fallback={<div>Loading... </div>}>
+        <Switch>
+          {routes.map((route, idx) => {
+            console.log("-----", idx, ": ", route);
+            return (
+              <Route
+                path={route.path}
+                exact
+                component={withLayout(route.component)}
+                // access={route.access}
+                key={idx}
+              />
+            );
+          })}
+        </Switch>
+      </Suspense>
+    </Router>
   );
 }
 
